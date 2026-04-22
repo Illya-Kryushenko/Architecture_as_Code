@@ -68,5 +68,15 @@ This repository currently contains:
 - evolving structure for an executable architecture model
 
 ## Status
-
 Early concept exploration.
+
+## Scope (Initial Version)
+
+This project focuses on architecture modeling and Terraform-based implementation.
+
+Out of scope for the initial version:
+- Identity governance (PIM, Conditional Access)
+- Microsoft Graph-based configurations
+- Full Microsoft 365 security integration
+
+These areas are modeled but not automated.
