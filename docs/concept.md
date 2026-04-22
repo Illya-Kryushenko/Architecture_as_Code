@@ -77,3 +77,15 @@ A practical starting point is to define architecture templates based on Microsof
 - compliance templates
 - open template ecosystem
 - extension from security architecture to broader infrastructure architecture
+
+## Relationship to Existing Microsoft Capabilities
+
+The solution does not replace:
+- Azure Policy
+- Microsoft Defender for Cloud
+- Microsoft Cloud Security Benchmark
+
+Instead, it:
+- references them
+- structures them
+- connects them to architecture decisions and IaC
