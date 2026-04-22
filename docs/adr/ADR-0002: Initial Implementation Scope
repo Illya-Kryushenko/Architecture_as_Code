@@ -1,0 +1,37 @@
+# ADR-0002: Initial Implementation Scope
+
+## Status
+Accepted
+
+## Context
+
+The concept includes a broad architecture model covering identity, governance, and infrastructure.
+
+However, full implementation would require integration with Microsoft Graph and multiple control planes, significantly increasing complexity.
+
+## Decision
+
+The initial implementation will be limited to components that can be fully managed via Terraform.
+
+Out of scope:
+- Microsoft Entra ID advanced features (PIM, Conditional Access)
+- Graph API-based configurations
+- Microsoft 365 security workloads
+
+These will be represented in the model but not automated.
+
+## Rationale
+
+This allows:
+- faster validation of the concept
+- reduced implementation complexity
+- clear separation between architecture and execution
+
+## Consequences
+
+The architecture model will be broader than the execution layer.
+
+Some controls will be:
+- external
+- manual
+- not yet automated
