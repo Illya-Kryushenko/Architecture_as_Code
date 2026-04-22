@@ -89,3 +89,24 @@ Instead, it:
 - references them
 - structures them
 - connects them to architecture decisions and IaC
+
+## Representation Layer
+
+The architecture model is independent from its textual representation.
+
+Different representation profiles can render the same model using:
+- different terminology
+- different document structures
+- organization-specific formats
+
+The initial implementation includes a single neutral representation.
+
+## Coverage and Completeness
+
+The system tracks which elements of the architecture model are represented in each document view.
+
+Elements not included in a representation must be:
+- explicitly excluded
+- or marked as not yet represented
+
+This ensures no architectural decisions or controls are silently omitted.
