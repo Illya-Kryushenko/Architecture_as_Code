@@ -1,6 +1,6 @@
 import argparse
-from .model import load_model
-from .validator import check_model_against_terraform_state
+from model import load_model
+from validator import check_model_against_terraform_state
 
 def main():
     parser = argparse.ArgumentParser()
