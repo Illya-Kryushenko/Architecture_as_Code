@@ -1,4 +1,4 @@
-# executable-architecture
+# Architecture as Code (AaC)
 Structured architecture models linked to CAF, Zero Trust, and Infrastructure as Code
 
 ## Overview
