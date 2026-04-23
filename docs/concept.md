@@ -1,8 +1,5 @@
-# Concept
-
-## Working title
-
-Architecture as Code (AaC) for CAF and Zero Trust
+# Architecture as Code (AaC) for CAF and Zero Trust
+*A proposal for an Open Standard*
 
 ## Core hypothesis
 
@@ -35,6 +32,13 @@ A central chain in the model is:
 Risk → Control Objective → Control → Implementation → Signal
 
 This allows the model to connect architecture with deployed reality and verification.
+
+Example:
+- Risk: Privilege escalation via compromised admin endpoint
+- Control Objective: Privileged access originates only from trusted devices
+- Control: Privileged Access Workstation (PAW)
+- Implementation: Azure VM with tag `role: PAW`
+- Signal: Entra ID sign-in logs, Conditional Access logs
 
 ## Human and machine representation
 
@@ -89,6 +93,17 @@ Instead, it:
 - references them
 - structures them
 - connects them to architecture decisions and IaC
+
+## Open Standard Ambition
+
+This proposal is not tied to a specific vendor, tool, or methodology.
+
+The goal is to create an **Open Standard** for Architecture as Code that can be:
+- Implemented by any organisation
+- Rendered into any documentation format
+- Validated against any IaC tool (initially Terraform, later others)
+
+All contributions — to the model, the schema, or the validator — are welcome under the MIT license.
 
 ## Representation Layer
 
