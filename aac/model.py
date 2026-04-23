@@ -12,7 +12,7 @@ class Risk:
 class Control:
     id: str
     name: str
-    control_type: str  # "TechnicalControl"
+    type: str  # "TechnicalControl"
     constraints: List[Dict[str, str]]
 
 @dataclass
