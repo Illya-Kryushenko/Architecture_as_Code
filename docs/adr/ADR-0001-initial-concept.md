@@ -1,4 +1,4 @@
-# ADR-0001: Initial concept for Executable Architecture
+# ADR-0001: Initial concept for Architecture as Code (AaC)
 
 ## Status
 
