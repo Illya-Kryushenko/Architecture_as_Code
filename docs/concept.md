@@ -2,7 +2,7 @@
 
 ## Working title
 
-Executable Architecture for CAF and Zero Trust
+Architecture as Code (AaC) for CAF and Zero Trust
 
 ## Core hypothesis
 
