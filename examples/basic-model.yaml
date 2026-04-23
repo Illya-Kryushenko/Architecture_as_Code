@@ -21,8 +21,10 @@ implementation_mapping:
     resource_type: azurerm_windows_virtual_machine
     tags:
       role: PAW
+    parameters: {}
   - control_id: C-001
     resource_type: azurerm_conditional_access_policy
+    tags: {} 
     parameters:
       grant_controls:
         - requireCompliantDevice
