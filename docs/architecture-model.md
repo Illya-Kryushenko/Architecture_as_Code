@@ -77,6 +77,6 @@ The example implements the following chain:
 
 ## Open Standard
 
-This model is versioned and open to change. The current version is v1 (see [`/specification/v1/schema.json`](../specification/v1/schema.json)).
+This model is versioned and open to change.
 
 All contributions to the model definition are welcome.
