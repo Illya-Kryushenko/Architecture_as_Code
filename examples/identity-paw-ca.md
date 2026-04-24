@@ -31,4 +31,4 @@ Break-glass accounts are excluded and monitored separately.
 ## See also
 
 - [Full AaC model example](../examples/basic-model.yaml)
-- [Architecture model specification](.docs/architecture-model.md)
+- [Architecture model specification](docs/architecture-model.md)
