@@ -1,5 +1,5 @@
 import json
-from model import ArchitectureModel
+from .model import ArchitectureModel
 
 def check_model_against_terraform_state(model: ArchitectureModel, state_path: str) -> bool:
     with open(state_path) as f:
@@ -8,7 +8,6 @@ def check_model_against_terraform_state(model: ArchitectureModel, state_path: st
     resources = {}
     for resource in state.get("resources", []):
         for instance in resource.get("instances", []):
-            # Simplified: Gathering resources by type and name
             resource_type = resource["type"]
             resources[resource_type] = resources.get(resource_type, 0) + 1
 
