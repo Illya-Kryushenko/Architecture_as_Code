@@ -63,7 +63,7 @@ The first practical scope is:
 
 The AaC model specification is in [`docs/architecture-model.md`](docs/architecture-model.md).
 
-- [examples/basic-model.yaml](examples/basic-model.yaml) – defines the structure of the architecture model
+- [Example architecture model](examples/basic-model.yaml) – defines the structure of the architecture model
 - [Example model](examples/basic-model.yaml) – illustrates risks, controls, and implementation mappings
 - [Terraform state example](examples/example.tfstate) – used for validation
 
