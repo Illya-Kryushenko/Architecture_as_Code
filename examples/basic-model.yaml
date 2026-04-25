@@ -7,6 +7,7 @@ risks:
     control_objective: Ensure privileged access originates only from trusted and managed devices
     controls:
       - C-001
+      - C-002
 
 controls:
   - id: C-001
@@ -18,25 +19,46 @@ controls:
       - id: CON-002
         description: Hardware security must be enabled (Secure Boot and vTPM)
 
+  - id: C-002
+    name: Managed Admin Endpoint Baseline
+    type: TechnicalControl
+    constraints:
+      - id: CON-003
+        description: Admin endpoint must use the approved PAW baseline
+      - id: CON-004
+        description: Endpoint monitoring extension must be present
+
 implementation_mapping:
-  # Validation for the physical/virtual endpoint
+  # C-001: expected to FAIL + MISSING -> control status = FAILED
   - control_id: C-001
     resource_type: azurerm_windows_virtual_machine
     tags:
       role: PAW
     parameters:
-      # Deep inspection of nested attributes in Terraform state
       secure_boot_enabled: true
       vtpm_enabled: true
 
-  # Validation for the identity layer (access policy)
   - control_id: C-001
     resource_type: azurerm_conditional_access_policy
-    tags: {} 
+    tags: {}
     parameters:
-      # Verifying that the policy requires compliant devices
       grant_controls:
         - requireCompliantDevice
+
+  # C-002: expected to PASS + MISSING -> control status = INCOMPLETE
+  - control_id: C-002
+    resource_type: azurerm_windows_virtual_machine
+    tags:
+      role: PAW
+    parameters:
+      secure_boot_enabled: false
+      vtpm_enabled: false
+
+  - control_id: C-002
+    resource_type: azurerm_virtual_machine_extension
+    tags: {}
+    parameters:
+      publisher: Microsoft.Azure.Security
 
 signals:
   - source: Entra ID sign-in logs
