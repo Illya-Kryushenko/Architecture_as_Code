@@ -5,6 +5,8 @@ risks:
   - id: R-001
     name: Privilege escalation via compromised admin endpoint
     control_objective: Ensure privileged access originates only from trusted and managed devices
+    controls:
+      - C-001
 
 controls:
   - id: C-001
