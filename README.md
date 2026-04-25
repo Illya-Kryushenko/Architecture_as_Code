@@ -49,7 +49,7 @@ The first practical scope is:
 - Security Architecture as the first implementation domain
 - human-readable architecture documents generated from a structured model
 - support for both canonical architecture data and human commentary
-- validation against IaC and deployed state (working prototype: resource existence check)
+- early validation against Terraform state through a simple working prototype
 
 ## Guiding Principles
 
@@ -78,7 +78,7 @@ We invite everyone to:
 4. **Contribute code** – validator, Terraform parser, document generator, Azure API integration
 5. **Adopt AaC** in your projects (even as an experiment)
 
-This project aims to become an **Open Standard** for Architecture as Code, not a vendor-specific tool. We want to build a community around it.
+The long-term ambition is to evolve this into an open, community-driven Architecture as Code approach rather than a vendor-specific tool.
 
 All contributions are welcome: docs, examples, code, use cases.
 
@@ -86,19 +86,35 @@ All contributions are welcome: docs, examples, code, use cases.
 
 This repository currently contains:
 
-- concept notes
+- concept documents and whitepaper material
+- an evolving Architecture as Code model
 - initial ADRs
-- evolving structure for an Architecture as Code model
-- **working prototype** (validator)
-- **minimal specification** v1 (JSON schema)
+- example representations of the model
+- a working prototype validator
+- early implementation code used to test the concept
 
-## Status
+## Current Status
 
-**Working prototype** – the validator can:
-- Parse an AaC model (YAML)
-- Parse a Terraform state file (JSON)
-- Check that resources defined in the model exist in the state
-- Output PASS/FAIL for each control
+This repository contains:
+
+### Conceptually defined
+- an Architecture as Code concept and rationale
+- a canonical architecture model focused on traceability from risk to control, implementation, and observable validation
+- the distinction between canonical model and human-readable architectural views
+- early ideas for representation profiles, coverage, and completeness
+
+### Implemented in the current prototype
+- parsing an AaC model from YAML
+- parsing Terraform state from JSON
+- validating resource type, tags, and selected parameters against the model
+- producing validation results through a simple CLI
+
+### Not yet implemented
+- formal risk-to-control coverage analysis
+- signal-based validation
+- representation profile rendering
+- validation beyond the provided Terraform state scope
+- broader multi-domain support beyond the current example focus
 
 See [`examples/basic-model.yaml`](examples/basic-model.yaml) and run:
 ```bash
@@ -109,15 +125,10 @@ PYTHONPATH=. python -m aac.cli --model examples/basic-model.yaml --state example
 
 This project focuses on architecture modeling and Terraform-based implementation.
 
-Out of scope for the initial version:
-- Identity governance (PIM, Conditional Access)
-- Microsoft Graph-based configurations
+Out of scope for the current prototype:
+- Identity governance automation (including PIM and Conditional Access)
+- Microsoft Graph-based configuration validation
 - Full Microsoft 365 security integration
-
-These areas are modeled but not automated.
-
-- Supports multiple representation profiles (future capability)
-- Includes architecture coverage validation (planned)
 
 ## Contributing
 
