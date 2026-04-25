@@ -58,22 +58,24 @@ def check_model_against_terraform_state(model: ArchitectureModel, state_path: st
             })
 
     all_passed = True
-    covered_control_ids = set()
+    control_mapping_results = {}
 
     print("--- Mapping Validation ---")
     for mapping in model.implementation_mapping:
+        control_mapping_results.setdefault(mapping.control_id, [])
         found = False
         for res in all_resources:
             matches, msg = check_resource_matches_mapping(res, mapping)
             if matches:
                 found = True
-                covered_control_ids.add(mapping.control_id)
+                control_mapping_results[mapping.control_id].append(True)
                 print(f"✅ PASS: {mapping.control_id} -> {res['name']} ({mapping.resource_type})")
                 break
             
             # If type matches but validation fails, report error and stop searching for this mapping
             if msg != "type mismatch":
                 print(f"❌ FAIL: {mapping.control_id} found resource '{res['name']}', but {msg}")
+                control_mapping_results[mapping.control_id].append(False)
                 all_passed = False
                 found = True
                 break
@@ -81,7 +83,20 @@ def check_model_against_terraform_state(model: ArchitectureModel, state_path: st
         if not found:
             print(f"⚠️  MISSING: {mapping.control_id} (no resource of type {mapping.resource_type} found)")
             all_passed = False
+            control_mapping_results[mapping.control_id].append(False)
+    covered_control_ids = set()
 
+    print("\n--- Control Coverage Analysis ---")
+    for control in model.controls:
+        results = control_mapping_results.get(control.id, [])
+        is_covered = bool(results) and all(results)
+
+        status = "🛡️  COVERED" if is_covered else "🚫 NOT COVERED"
+        print(f"{status} | Control '{control.name}' (ID: {control.id})")
+
+        if is_covered:
+            covered_control_ids.add(control.id)
+            
     # Risk Coverage Analysis
     print("\n--- Risk Coverage Analysis ---")
     for risk in model.risks:
