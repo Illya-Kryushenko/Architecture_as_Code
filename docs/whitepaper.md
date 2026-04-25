@@ -16,15 +16,19 @@ This proposal introduces a canonical architecture model that separates semantic 
 
 Architecture is represented as a structured model rather than static documentation. This model captures intent, constraints, decisions, and mappings to implementation.
 
-The minimal modeling unit is a traceable chain from:
+A core executable chain in the model is:
 
 > Risk → Control → Constraint → Implementation → Validation
 
-From this model, multiple outputs can be generated: human-readable documents, validation rules, and IaC scaffolding.
+Requirements provide an additional entry point into the model, linking external obligations to the same control and implementation structure.
+
+From this model, multiple outputs can be generated: human-readable documents, validation rules, and IaC scaffolding. Validation is derived from observable signals (logs, state, policies) that provide evidence of implementation correctness.
+
+This model introduces explicit validation semantics, where implementation evidence is aggregated into control and risk-level outcomes.
 
 ## Requirements as First-Class Citizens
 
-In real‑world projects, especially in regulated industries (finance, healthcare, government), architecture is driven by **requirements** originating from contracts, compliance frameworks, stakeholder needs, or non‑functional constraints. Traditional architecture documents capture these requirements, but the link to implementation is often lost or becomes unverifiable.
+In real‑world projects, especially in regulated industries (finance, healthcare, government), architecture is driven by **requirements** originating from contracts, compliance frameworks, stakeholder needs, or non‑functional constraints. Traditional architecture documents capture these requirements, but the link to implementation is often lost or becomes unverifiable. Requirements represent external or contractual intent, while controls represent architectural mechanisms that implement that intent.
 
 AaC introduces **requirements as first‑class elements** of the canonical model. Each requirement is not just a textual statement: it carries **explicit verification criteria** and **failure conditions**.
 
@@ -38,7 +42,10 @@ AaC introduces **requirements as first‑class elements** of the canonical model
 | `type` | Functional, non‑functional, security, compliance, etc. |
 | `verification_criteria` | Machine‑parseable or human‑readable condition that proves the requirement is satisfied |
 | `failure_condition` | Condition that indicates a violation of the requirement |
-| `implementation_mapping` | Links the requirement to specific IaC resources, policies, or controls |
+| `control_mapping` | Links the requirement to one or more architectural controls that implement it |
+| `implementation_mapping` | Optional direct linkage to specific IaC resources, policies, or controls when required for verification |
+
+Requirements are primarily realized through architectural controls. Direct mapping from requirements to implementation is possible but should be treated as an exception rather than the primary modeling approach.
 
 ### Example: Secure Boot Requirement
 
@@ -66,7 +73,7 @@ requirements:
 - **Traceability** – Every requirement is directly linked to implementation and validation.
 - **Auditability** – You can generate a report showing exactly which requirements are satisfied (or violated) in the current environment.
 - **Contractual Evidence** – For each contract clause, the model provides machine‑checked evidence.
-- **Closing the Loop** – The same requirement drives documentation, IaC generation, and compliance checks.
+- **Closing the Loop** – The same requirement can drive documentation, future IaC generation, and compliance checks.
 
 ## Human vs Machine Representation
 
@@ -86,11 +93,11 @@ This implies three layers:
 
 The initial implementation should support one neutral representation profile only. However, the model must be designed so that future profiles can render the same architecture using a company-preferred or methodology-specific style.
 
-**Critical rule:** Representation profiles may change terminology, section order, and visual grouping, but they must not change the meaning of model elements. The model is canonical. Profiles are representational, not semantic authorities.
+**Critical rule:** Representation profiles may change terminology, section order, and visual grouping, but they must not change the meaning of model elements. The model is canonical. Profiles are representational, not semantic authorities. Profiles may filter or hide elements, but such exclusions must be explicitly tracked through coverage mechanisms.
 
 ### Strategic implication
 
-This design enables interoperability across organizational boundaries. If a 3rd party company and a client both adopt the canonical model (or mutually translatable profiles), architectural handover ceases to be a document exchange and becomes a model exchange. Each party can render the architecture into its own preferred document format without manual reinterpretation.
+This design enables interoperability across organizational boundaries. If a 3rd party company and a client both adopt the canonical model (or mutually translatable profiles), architectural handover can evolve from a document exchange toward a model exchange. Each party can render the architecture into its own preferred document format without manual reinterpretation.
 
 The same mechanism works for subcontractor integration: a security specialist receives only the security view, works in its own tooling, and returns updates that merge into the canonical model.
 
@@ -106,7 +113,7 @@ The implementation complexity of multi-profile support is non-trivial, but archi
 
 ## Coverage and Completeness Control
 
-A representation problem remains even when multiple views are supported: a given human-readable document may omit architectural elements that exist in the model. This is not automatically wrong, because different document types have different purposes. However, omissions must be explicit and controlled.
+A representation problem remains even when multiple views are supported: a given human-readable document may omit architectural elements that exist in the model. This is not automatically wrong, because different document types have different purposes. However, omissions must be explicit and controlled. Coverage control complements validation by ensuring that architectural intent is fully represented, while validation ensures it is correctly implemented.
 
 The system should therefore include a coverage or completeness control layer. Instead of forcing every document to show every element, the system should detect which model elements are represented in each view, which are intentionally excluded, and which are missing without justification.
 
@@ -126,7 +133,7 @@ The model exists to describe intent. Implementation exists in IaC (Terraform). O
 2. **IaC → Model completeness check** – are there implemented components that have no corresponding model element (orphaned resources)?
 3. **Selective override** – some divergence may be intentional (e.g., a temporary change for incident response). The model should allow explicit waiver annotations with expiration dates.
 
-Initially, drift detection operates on Terraform state (not directly on Azure APIs). This reduces complexity and leverages Terraform as a structured representation of reality. Future versions may add direct Azure API integration for resources not managed by Terraform. Terraform is used as a structured, quarriable representation of implemented state, not only as a deployment tool.
+Initially, drift detection operates on Terraform state (not directly on Azure APIs). This reduces complexity and leverages Terraform as a structured representation of reality. Future versions may add direct Azure API integration for resources not managed by Terraform. Terraform is used as a structured, quarriable representation of implemented state, not only as a deployment tool. Validation results are aggregated from implementation level to control and risk levels to provide architecture-level insight.
 
 ## End-to-End Example: Identity / PAW / Conditional Access
 
@@ -137,7 +144,9 @@ Initially, drift detection operates on Terraform state (not directly on Azure AP
 - **Control:** Privileged Access Workstation (PAW). Supporting controls include Conditional Access enforcement, device compliance enforcement, and Privileged Identity Management (PIM).
 - **Constraints:** Administrative roles must require compliant devices, access from non-managed devices must be blocked, and privileged roles must be activated via PIM.
 
-Architecture model representation, in simplified form, can be viewed as: Risk → Control → Constraint → Implementation → Signal.
+Architecture model representation, in simplified form, can be viewed as: 
+
+>Risk → Control → Constraint → Implementation → Observable Signal → Validation
 
 Implementation mapping includes Intune for device compliance, Conditional Access policies for access enforcement, Entra ID role assignment, and PIM for just-in-time privilege elevation.
 
@@ -147,7 +156,7 @@ Signals and verification include Entra ID sign-in logs, Conditional Access logs,
 
 ## From Example to Canonical Encoding
 
-The example above can be encoded in a structured format (YAML with schema validation). A simplified conceptual illustration, not the current schema:
+The example above can be encoded in a structured format (YAML with schema validation). A simplified conceptual illustration, not the current schema. The purpose of this example is to show semantic structure, not the exact field layout of the current prototype:
 ```yaml
 risk:
   id: "R-001"
@@ -187,15 +196,23 @@ This encoding is not intended for direct human reading. It is the canonical sour
 
 To ensure feasibility and maintain momentum, the initial implementation scope is intentionally limited.
 
-The first version of the system will include only Terraform-manageable components.
+The first version of the system distinguishes between model scope and executable validation scope.
 
-**Included:**
+The model scope includes a broader set of architectural elements:
+
+**Included in the model scope:**
 
 - Azure resources
 - Azure Policy
 - Management groups
 - RBAC
 - Core security controls
+
+The executable validation scope is intentionally narrower and focuses on what can be reliably evaluated through Terraform state.
+
+**Included in the executable validation scope:**
+
+- Terraform-managed Azure resources observable through Terraform state
 
 **Excluded (modeled but not automated):**
 
@@ -222,7 +239,9 @@ The concept does not attempt to replace existing Microsoft security and governan
 
 These tools provide control definitions, compliance evaluation, and recommendations. They do **not** provide architectural intent, decision rationale, traceability from risk to implementation, or a unified model linking architecture to IaC.
 
-The proposed solution therefore introduces a higher-level architecture layer that references existing controls, maps them to requirements and constraints, connects them to implementation through Terraform, and provides traceability across risk, control, constraint, implementation, and validation. Instead of duplicating functionality, the system acts as an orchestrator and model layer above existing tools.
+The proposed solution therefore introduces a higher-level architecture layer that references existing controls, maps them to requirements, controls, and constraints, connects them to implementation through Terraform, and provides traceability across risk, control, constraint, implementation, and validation. Instead of duplicating functionality, the system acts as an orchestrator and model layer above existing tools.
+
+In the initial implementation, this traceability is strongest for Terraform-managed components and remains partial for identity and Graph-managed domains.
 
 ## Integration Strategy
 
