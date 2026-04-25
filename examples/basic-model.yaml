@@ -1,5 +1,5 @@
 # Example: Zero Trust Privileged Access Model
-# This is a canonical architecture fragment, not documentation.
+# This model demonstrates how to link business risks to specific infrastructure configurations.
 
 risks:
   - id: R-001
@@ -14,18 +14,25 @@ controls:
       - id: CON-001
         description: Admin roles require compliant devices
       - id: CON-002
-        description: Access from non-managed devices must be blocked
+        description: Hardware security must be enabled (Secure Boot and vTPM)
 
 implementation_mapping:
+  # Validation for the physical/virtual endpoint
   - control_id: C-001
     resource_type: azurerm_windows_virtual_machine
     tags:
       role: PAW
-    parameters: {}
+    parameters:
+      # Deep inspection of nested attributes in Terraform state
+      secure_boot_enabled: true
+      vtpm_enabled: true
+
+  # Validation for the identity layer (access policy)
   - control_id: C-001
     resource_type: azurerm_conditional_access_policy
     tags: {} 
     parameters:
+      # Verifying that the policy requires compliant devices
       grant_controls:
         - requireCompliantDevice
 
