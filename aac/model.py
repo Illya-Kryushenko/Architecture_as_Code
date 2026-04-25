@@ -7,6 +7,7 @@ class Risk:
     id: str
     name: str
     control_objective: str
+    controls: List[str]
 
 @dataclass
 class Control:
@@ -31,8 +32,9 @@ class ArchitectureModel:
 def load_model(path: str) -> ArchitectureModel:
     with open(path) as f:
         data = yaml.safe_load(f)
-    # YAML dataclass (simplified)
+
     risks = [Risk(**r) for r in data.get("risks", [])]
     controls = [Control(**c) for c in data.get("controls", [])]
     mappings = [ImplementationMapping(**m) for m in data.get("implementation_mapping", [])]
+
     return ArchitectureModel(risks, controls, mappings)
