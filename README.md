@@ -116,10 +116,23 @@ This repository contains:
 - validation beyond the provided Terraform state scope
 - broader multi-domain support beyond the current example focus
 
-See [`examples/basic-model.yaml`](examples/basic-model.yaml) and run:
+## What You Can Do Today
+
+With the current prototype, you can:
+
+- define a simple architecture model linking risks, controls, and implementation mappings
+- validate Terraform state against that model
+- identify:
+  - missing implementations
+  - misconfigured resources
+  - partially implemented controls
+- see how implementation issues propagate to control and risk status (e.g., FAILED, INCOMPLETE, EXPOSED)
+
+A ready-to-use example model and Terraform state are included. See [`examples/basic-model.yaml`](examples/basic-model.yaml) and run:
 ```bash
 PYTHONPATH=. python -m aac.cli --model examples/basic-model.yaml --state examples/example.tfstate
 ```
+The output shows validation results at mapping, control, and risk levels.
 
 ## Scope (Initial Version)
 

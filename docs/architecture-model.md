@@ -10,7 +10,8 @@ A potential threat or vulnerability that could compromise the system.
 **Fields:**
 - `id` – unique identifier (e.g., R-001)
 - `name` – short description
-- `control_objective` – what must be achieved to mitigate the risk
+- `control_objective` – high-level mitigation goal (descriptive)
+- `controls` – list of controls that address this risk
 
 ### Control Objective
 A high-level goal that, if achieved, mitigates the risk.
@@ -67,6 +68,12 @@ The example implements the following chain:
 
 **Current prototype coverage:** Only resource existence for `azurerm_windows_virtual_machine` is implemented. Conditional Access policy check is modeled but not yet validated.
 
+The model includes multiple controls linked to the same risk (C-001 and C-002), demonstrating different validation outcomes:
+
+- `FAILED` control (C-001): one mapping fails and another is missing
+- `INCOMPLETE` control (C-002): one mapping passes and another is missing
+- `EXPOSED` risk (R-001): not all linked controls are covered
+
 ## Relationships
 
 - A **Risk** is mitigated by one or more **Control Objectives** (conceptual relationship).
@@ -78,6 +85,28 @@ The example implements the following chain:
 - A **Control** is linked to infrastructure via **Implementation Mappings**.
 
 - **Validation** checks that Implementation Mappings match actual Terraform state.
+
+## Validation Semantics
+
+In the current prototype, validation is evaluated at three levels:
+
+### Mapping level
+Each implementation mapping is evaluated as:
+- `PASS` – a matching resource was found and required tags and parameters matched
+- `FAIL` – a resource of the expected type was found, but required tags or parameters did not match
+- `MISSING` – no resource of the required type was found in the provided Terraform state
+
+### Control level
+A control status is derived from the results of all its implementation mappings:
+- `COVERED` – all mappings passed
+- `FAILED` – at least one mapping failed
+- `INCOMPLETE` – some mappings passed, but others are missing
+- `MISSING` – all mappings are missing
+
+### Risk level
+A risk is evaluated based on its linked controls:
+- `COVERED` – all linked controls are covered
+- `EXPOSED` – one or more linked controls are not covered
 
 ## Open Standard
 
