@@ -101,7 +101,7 @@ Signals and verification include Entra ID sign-in logs, Conditional Access logs,
 
 ### From Example to Canonical Encoding
 
-The example above can be encoded in a structured format (YAML with schema validation). A simplified illustration:
+The example above can be encoded in a structured format (YAML with schema validation). A simplified conceptual illustration, not the current schema:
 
 ```yaml
 risk:
