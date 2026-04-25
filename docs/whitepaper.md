@@ -22,6 +22,52 @@ The minimal modeling unit is a traceable chain from:
 
 From this model, multiple outputs can be generated: human-readable documents, validation rules, and IaC scaffolding.
 
+## Requirements as First-Class Citizens
+
+In real‑world projects, especially in regulated industries (finance, healthcare, government), architecture is driven by **requirements** originating from contracts, compliance frameworks, stakeholder needs, or non‑functional constraints. Traditional architecture documents capture these requirements, but the link to implementation is often lost or becomes unverifiable.
+
+AaC introduces **requirements as first‑class elements** of the canonical model. Each requirement is not just a textual statement: it carries **explicit verification criteria** and **failure conditions**.
+
+### Requirement Model
+
+| Field | Description |
+| :--- | :--- |
+| `id` | Unique identifier (e.g., REQ‑001) |
+| `description` | Human‑readable statement of the requirement |
+| `source` | Origin (contract clause, regulatory standard, architectural decision) |
+| `type` | Functional, non‑functional, security, compliance, etc. |
+| `verification_criteria` | Machine‑parseable or human‑readable condition that proves the requirement is satisfied |
+| `failure_condition` | Condition that indicates a violation of the requirement |
+| `implementation_mapping` | Links the requirement to specific IaC resources, policies, or controls |
+
+### Example: Secure Boot Requirement
+
+```yaml
+requirements:
+  - id: REQ-001
+    description: "All production VMs must have Secure Boot enabled"
+    source: "Contract §5.2 / NIST SP 800-123"
+    type: "security"
+    verification_criteria: |
+      Any resource of type 'azurerm_windows_virtual_machine'
+      tagged 'environment:production' MUST have
+      'secure_boot_enabled' == True
+    failure_condition: |
+      Any 'azurerm_windows_virtual_machine'
+      WHERE 'environment:production' AND
+      'secure_boot_enabled' != True
+    implementation_mapping:
+      - resource_type: azurerm_windows_virtual_machine
+        parameters:
+          secure_boot_enabled: True
+```
+### Why This Is Important
+
+- **Traceability** – Every requirement is directly linked to implementation and validation.
+- **Auditability** – You can generate a report showing exactly which requirements are satisfied (or violated) in the current environment.
+- **Contractual Evidence** – For each contract clause, the model provides machine‑checked evidence.
+- **Closing the Loop** – The same requirement drives documentation, IaC generation, and compliance checks.
+
 ## Human vs Machine Representation
 
 The architecture model is the single source of truth. Human-readable documents are generated views.
@@ -99,10 +145,9 @@ Enforcement can start as soft enforcement, such as detecting users assigned admi
 
 Signals and verification include Entra ID sign-in logs, Conditional Access logs, and Defender alerts. Drift detection would identify cases such as direct role assignment instead of PIM or a disabled Conditional Access policy.
 
-### From Example to Canonical Encoding
+## From Example to Canonical Encoding
 
 The example above can be encoded in a structured format (YAML with schema validation). A simplified conceptual illustration, not the current schema:
-
 ```yaml
 risk:
   id: "R-001"
@@ -135,6 +180,7 @@ signal:
   - source: "Conditional Access logs"
   - source: "Defender alerts"
 ```
+
 This encoding is not intended for direct human reading. It is the canonical source from which documents, IaC skeletons, and coverage reports are generated.
 
 ## Scope Definition for Initial Implementation
