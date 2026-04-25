@@ -68,10 +68,12 @@ The example implements the following chain:
 
 **Current prototype coverage:** Only resource existence for `azurerm_windows_virtual_machine` is implemented. Conditional Access policy check is modeled but not yet validated.
 
-The model includes multiple controls linked to the same risk (C-001 and C-002), demonstrating different validation outcomes:
+The model includes multiple controls linked to the same risk (C-001 to C-004), demonstrating different validation outcomes:
 
-- `FAILED` control (C-001): one mapping fails and another is missing
+- `FAILED` control (C-001): one mapping fails by parameter mismatch and another is missing
 - `INCOMPLETE` control (C-002): one mapping passes and another is missing
+- `FAILED` control (C-003): a mapping fails by tag mismatch
+- `MISSING` control (C-004): all mappings are missing
 - `EXPOSED` risk (R-001): not all linked controls are covered
 
 ## Relationships

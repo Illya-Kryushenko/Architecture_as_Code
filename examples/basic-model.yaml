@@ -1,5 +1,6 @@
 # Example: Zero Trust Privileged Access Model
-# This model demonstrates how to link business risks to specific infrastructure configurations.
+# This model demonstrates how to link business risks to specific infrastructure configurations
+# and how validation results propagate from implementation mappings to controls and risks.
 
 risks:
   - id: R-001
@@ -8,6 +9,8 @@ risks:
     controls:
       - C-001
       - C-002
+      - C-003
+      - C-004
 
 controls:
   - id: C-001
@@ -27,6 +30,22 @@ controls:
         description: Admin endpoint must use the approved PAW baseline
       - id: CON-004
         description: Endpoint monitoring extension must be present
+
+  - id: C-003
+    name: Administrative Endpoint Classification
+    type: TechnicalControl
+    constraints:
+      - id: CON-005
+        description: Administrative endpoints must carry the required classification tag
+
+  - id: C-004
+    name: Dedicated Administrative Isolation Components
+    type: TechnicalControl
+    constraints:
+      - id: CON-006
+        description: Dedicated isolation components must be deployed for privileged access
+      - id: CON-007
+        description: Supporting policy artifacts must exist in the managed environment
 
 implementation_mapping:
   # C-001: expected to FAIL + MISSING -> control status = FAILED
@@ -59,6 +78,28 @@ implementation_mapping:
     tags: {}
     parameters:
       publisher: Microsoft.Azure.Security
+
+  # C-003: expected to FAIL by tag mismatch -> control status = FAILED
+  - control_id: C-003
+    resource_type: azurerm_windows_virtual_machine
+    tags:
+      role: ADMIN
+    parameters: {}
+
+  # C-004: expected to MISSING + MISSING -> control status = MISSING
+  - control_id: C-004
+    resource_type: azurerm_firewall
+    tags:
+      zone: privileged
+    parameters:
+      sku_name: AZFW_VNet
+
+  - control_id: C-004
+    resource_type: azurerm_network_security_group
+    tags:
+      scope: privileged-access
+    parameters:
+      security_rule_count: 3
 
 signals:
   - source: Entra ID sign-in logs
