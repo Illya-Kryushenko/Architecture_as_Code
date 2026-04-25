@@ -48,6 +48,38 @@ def check_resource_matches_mapping(resource, mapping):
     return True, "ok"
 
 
+def evaluate_control_status(results):
+    """
+    Derives control status from mapping-level results.
+    """
+    if results and all(result == "PASS" for result in results):
+        return "COVERED"
+
+    if "FAIL" in results:
+        return "FAILED"
+
+    if "PASS" in results and "MISSING" in results:
+        return "INCOMPLETE"
+
+    if results and all(result == "MISSING" for result in results):
+        return "MISSING"
+
+    return "MISSING"
+
+
+def evaluate_risk_status(risk_controls, covered_control_ids):
+    """
+    Derives risk status from linked control coverage.
+    """
+    if not risk_controls:
+        return "EXPOSED"
+
+    if all(control_id in covered_control_ids for control_id in risk_controls):
+        return "COVERED"
+
+    return "EXPOSED"
+
+
 def check_model_against_terraform_state(model: ArchitectureModel, state_path: str) -> bool:
     """
     Validates an architecture model against a Terraform state file.
@@ -102,22 +134,16 @@ def check_model_against_terraform_state(model: ArchitectureModel, state_path: st
     print("\n--- Control Coverage Analysis ---")
     for control in model.controls:
         results = control_mapping_results.get(control.id, [])
+        control_status = evaluate_control_status(results)
 
-        if results and all(result == "PASS" for result in results):
-            control_status = "COVERED"
+        if control_status == "COVERED":
             status_icon = "🛡️"
             covered_control_ids.add(control.id)
-        elif "FAIL" in results:
-            control_status = "FAILED"
+        elif control_status == "FAILED":
             status_icon = "❌"
-        elif "PASS" in results and "MISSING" in results:
-            control_status = "INCOMPLETE"
+        elif control_status == "INCOMPLETE":
             status_icon = "🟡"
-        elif results and all(result == "MISSING" for result in results):
-            control_status = "MISSING"
-            status_icon = "⚠️"
         else:
-            control_status = "MISSING"
             status_icon = "⚠️"
 
         print(f"{status_icon} {control_status} | Control '{control.name}' (ID: {control.id})")
@@ -125,13 +151,9 @@ def check_model_against_terraform_state(model: ArchitectureModel, state_path: st
     print("\n--- Risk Coverage Analysis ---")
     for risk in model.risks:
         risk_controls = getattr(risk, "controls", [])
+        risk_status = evaluate_risk_status(risk_controls, covered_control_ids)
 
-        is_covered = all(
-            control_id in covered_control_ids
-            for control_id in risk_controls
-        ) if risk_controls else False
-
-        status = "🛡️  COVERED" if is_covered else "🚨 EXPOSED"
-        print(f"{status} | Risk '{risk.name}' (ID: {risk.id})")
+        status_icon = "🛡️" if risk_status == "COVERED" else "🚨"
+        print(f"{status_icon}  {risk_status} | Risk '{risk.name}' (ID: {risk.id})")
 
     return all_passed
