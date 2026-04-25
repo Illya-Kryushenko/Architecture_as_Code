@@ -43,7 +43,7 @@ Links a control to actual infrastructure resources (IaC).
 ### Validation
 The process of checking whether the implementation matches the model.
 
-**Current approach:** resource existence check (see [validator](../aac/validator.py))
+**Current approach:** validation against Terraform state, including resource type, tags, and selected parameters (see [validator](../aac/validator.py))
 
 ## Example
 
@@ -63,16 +63,20 @@ The example implements the following chain:
 - `azurerm_windows_virtual_machine` with `tags.role = PAW`  
 - `azurerm_conditional_access_policy` with `parameters.grant_controls = ["requireCompliantDevice"]`  
 ↓  
-**Validation:** Check that these resources exist in Terraform state
+**Validation:** Check that these resources exist in Terraform state and match required tags and parameters
 
 **Current prototype coverage:** Only resource existence for `azurerm_windows_virtual_machine` is implemented. Conditional Access policy check is modeled but not yet validated.
 
 ## Relationships
 
-- A **Risk** is mitigated by one or more **Control Objectives**.
-- A **Control Objective** is implemented by one or more **Controls**.
+- A **Risk** is mitigated by one or more **Control Objectives** (conceptual relationship).
+- A **Control Objective** is implemented by one or more **Controls** (conceptual relationship).
+
+- In the current model, **Controls are the primary link between risks and implementation**.
+
 - A **Control** has one or more **Constraints**.
 - A **Control** is linked to infrastructure via **Implementation Mappings**.
+
 - **Validation** checks that Implementation Mappings match actual Terraform state.
 
 ## Open Standard
